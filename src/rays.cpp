@@ -6,6 +6,8 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
+#include "ray3d.h"
+
 
 /* Main function */
 int main()
@@ -41,6 +43,14 @@ int main()
     cv::imshow(_windowName, img);
 
     cv::waitKey(0);
+
+
+    Coordinate3d coord1{10, 20, 30};
+    Vector3d dir1{1, 2, 3};
+
+    Ray3d ray1{coord1, dir1};
+
+    std::cout << "x= " << ray1.x() << " dir.x= " << ray1.direction().x() << std::endl;
 
     return 0;
 }
