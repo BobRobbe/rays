@@ -7,6 +7,24 @@
 Coordinate3d::Coordinate3d() : _x{0}, _y{0}, _z{0} {}
 Coordinate3d::~Coordinate3d() {}
 
+Coordinate3d::Coordinate3d(const Coordinate3d &source)
+{
+    _x = source._x;
+    _y = source._y;
+    _z = source._z;
+}
+
+Coordinate3d &Coordinate3d::operator=(const Coordinate3d &source)
+{
+    if (this == &source)
+        return *this;
+
+    _x = source._x;
+    _y = source._y;
+    _z = source._z;
+    return *this;
+}
+
 Coordinate3d::Coordinate3d(double dx, double dy, double dz) : _x{dx}, _y{dy}, _z{dz} {}
 
 // getters
