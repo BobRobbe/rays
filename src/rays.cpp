@@ -36,13 +36,18 @@ Color3d simple_ray_trace(const Ray3d &ray)
         return Color3d(1, 0, 0);
     }
 
+    if (sphere(ray, Coordinate3d(-0.8, -0.9, -3), 0.2))
+    {
+        return Color3d(1, 0, 1);
+    }
+
     // no object has been hit, paint background sky gradient
     // get the ray vector normalized to length 1
     Vector3d direction = ray.direction().vector_unit();
     // check the height (y) amount to fetch the sky color
     double height = 0.3 * (direction.y() + 1.0);
     // calculate a color gradient for the sky
-    return (Color3d(1.0, 1.0, 1.0) * (1.0 - height) + Color3d(0.3, 0.6, 1.0) * height);
+    return (Color3d(0.6, 0.6, 0.6) * (1.0 - height) + Color3d(0.3, 0.6, 1.0) * height);
 }
 
 /* Main function */
