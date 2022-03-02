@@ -1,4 +1,6 @@
 
+#include <cmath>
+
 #include "coordinate3d.h"
 
 // constructors
@@ -32,6 +34,11 @@ Coordinate3d Coordinate3d::operator+(const Coordinate3d &other)
     return Coordinate3d(x() + other.x(), y() + other.y(), z() + other.z());
 }
 
+Coordinate3d Coordinate3d::operator-(const Coordinate3d &other)
+{
+    return Coordinate3d(x() - other.x(), y() - other.y(), z() - other.z());
+}
+
 Coordinate3d &Coordinate3d::operator*=(const double factor)
 {
     _x *= factor;
@@ -48,4 +55,31 @@ Coordinate3d Coordinate3d::operator*(const Coordinate3d &other)
 Coordinate3d Coordinate3d::operator*(const double factor)
 {
     return Coordinate3d(x() * factor, y() * factor, z() * factor);
+}
+
+Coordinate3d Coordinate3d::operator/(const double factor)
+{
+    return Coordinate3d(x() / factor, y() / factor, z() / factor);
+}
+
+std::ostream &operator<<(std::ostream &my_out, const Coordinate3d &other)
+{
+    return my_out << "(" << other.x() << "," << other.y() << "," << other.z() << ")";
+}
+
+double Coordinate3d::length() const
+{
+    return std::sqrt(x() * x() + y() * y() + z() * z());
+}
+
+Coordinate3d Coordinate3d::vector_unit()
+{
+    double length = this->length();
+    Coordinate3d result{x() / length, y() / length, z() / length};
+    return result;
+}
+
+double Coordinate3d::dot(const Coordinate3d other) const
+{
+    return x() * other.x() + y() * other.y() + z() * other.z();
 }

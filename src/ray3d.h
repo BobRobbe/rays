@@ -15,6 +15,8 @@ public:
     Coordinate3d origin() const;
     Vector3d direction() const;
 
+    Coordinate3d target() const;
+
 protected:
     Vector3d _direction;
 };
