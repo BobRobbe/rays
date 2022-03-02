@@ -18,9 +18,10 @@ Color3d simple_ray_trace(const Ray3d &ray)
 {
     for (auto it = scene_objects.begin(); it < scene_objects.end(); ++it)
     {
-        if ((*it)->hits_render_object(ray))
+        double distance = (*it)->hits_render_object(ray);
+        if ( distance > 0.0 )
         {
-            return (*it)->get_color(ray);
+            return (*it)->get_color(ray, distance);
         }
     }
     return Color3d(0, 0, 0);

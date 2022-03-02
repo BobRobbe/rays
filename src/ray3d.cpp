@@ -24,3 +24,8 @@ Coordinate3d Ray3d::target() const
 {
     return Coordinate3d(x() + _direction.x(), y() + _direction.y(), z() + _direction.z());
 }
+
+Coordinate3d Ray3d::point_at(const double dist) const
+{
+    return (origin() + direction() * dist);
+}

@@ -1,4 +1,6 @@
 
+#include <cmath>
+
 #include "rendersphere.h"
 
 
@@ -15,7 +17,7 @@ RenderSphere::RenderSphere(const RenderSphere &source) {
 RenderSphere::RenderSphere(Coordinate3d coordinate, double radius) : RenderObject{coordinate}, _radius{radius} {}
 
 
-bool RenderSphere::hits_render_object(const Ray3d &ray) {   // override
+double RenderSphere::hits_render_object(const Ray3d &ray) {   // override
     Vector3d sphere_vector = ray.origin() - _origin;
     // implementing the sphere equation
     // https://gabrielgambetta.com/computer-graphics-from-scratch/02-basic-raytracing.html#the-sphere-equation
@@ -27,6 +29,18 @@ bool RenderSphere::hits_render_object(const Ray3d &ray) {   // override
     // no need to calculate the square root, just need to know whether
     // <= 0 : sphere is not in the rays path
     // > 0  : sphere got hit by the ray
-    return (root > 0);
+    if(root < 0 ) {
+        return -1.0;
+    } else {
+        return( (-b - sqrt(root)) / (2.0*a) );
+    }
 }
 
+Color3d RenderSphere::get_color(const Ray3d &ray, const double distance) {    // override
+    if( distance > 0.0 ) {
+        Vector3d normal = ray.point_at(distance) - Vector3d(0,0,-1);
+        return Color3d(normal.x()+1, normal.y()+1, normal.z()+1) * 0.5;
+    } else  {
+        return _color;
+    }
+}

@@ -15,9 +15,9 @@ public:
 
     RenderObject(Coordinate3d coordinate);
 
-    virtual bool hits_render_object( const Ray3d &ray);
+    virtual double hits_render_object( const Ray3d &ray);
 
-    virtual Color3d get_color(const Ray3d &ray);
+    virtual Color3d get_color(const Ray3d &ray, const double distance);
     void set_color(const Color3d color);
 
 protected:

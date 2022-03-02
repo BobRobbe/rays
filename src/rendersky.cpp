@@ -1,4 +1,5 @@
 
+#include <cmath>
 #include "rendersky.h"
 
 
@@ -14,16 +15,16 @@ RenderSky::RenderSky(const RenderSky &source) {
 RenderSky::RenderSky(Coordinate3d coordinate) : RenderObject{coordinate} {}
 
 
-bool RenderSky::hits_render_object(const Ray3d &ray) {   // override
-    return true;
+double RenderSky::hits_render_object(const Ray3d &ray) {   // override
+    return INFINITY;
 }
 
-Color3d RenderSky::get_color(const Ray3d &ray) {    // override
+Color3d RenderSky::get_color(const Ray3d &ray, const double distance) {    // override
     // no object has been hit, paint background sky gradient
     // get the ray vector normalized to length 1
     Vector3d direction = ray.direction().vector_unit();
     // check the height (y) amount to fetch the sky color
     double height = 0.3 * (direction.y() + 1.0);
     // calculate a color gradient for the sky
-    return (Color3d(0.8, 0.8, 0.8) * (1.0 - height) + Color3d(0.3, 0.6, 1.0) * height);
+    return (_color * (1.0 - height) + Color3d(0.3, 0.6, 1.0) * height);
 }

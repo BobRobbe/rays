@@ -17,6 +17,8 @@ public:
 
     Coordinate3d target() const;
 
+    Coordinate3d point_at(const double dist) const;
+
 protected:
     Vector3d _direction;
 };

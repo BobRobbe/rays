@@ -14,12 +14,12 @@ RenderObject::RenderObject(const RenderObject &source)
 
 RenderObject::RenderObject(Coordinate3d coordinate) : _origin{coordinate} {}
 
-bool RenderObject::hits_render_object(const Ray3d &ray)
+double RenderObject::hits_render_object(const Ray3d &ray)
 {
-    return false;
+    return -1.0;
 }
 
-Color3d RenderObject::get_color(const Ray3d &ray)
+Color3d RenderObject::get_color(const Ray3d &ray, const double distance)
 {
     return _color;
 }

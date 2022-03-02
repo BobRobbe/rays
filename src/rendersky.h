@@ -13,9 +13,9 @@ public:
 
     RenderSky(Coordinate3d coordinate);
 
-    bool hits_render_object(const Ray3d &ray) override;
+    double hits_render_object(const Ray3d &ray) override;
 
-    Color3d get_color(const Ray3d &ray);
+    Color3d get_color(const Ray3d &ray, const double distance);
 };
 
 #endif
