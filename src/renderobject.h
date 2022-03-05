@@ -12,6 +12,9 @@ public:
     RenderObject();
     ~RenderObject();
     RenderObject(const RenderObject &source);               // copy constructor
+    RenderObject& operator=(const RenderObject &source);    // copy assignment operator
+    RenderObject(const RenderObject &&source);              // move constructor
+    RenderObject& operator=(const RenderObject &&source);   // move assignment operator
 
     RenderObject(Coordinate3d coordinate);
 

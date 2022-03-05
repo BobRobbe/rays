@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <memory>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
@@ -10,8 +11,9 @@
 #include "color3d.h"
 #include "rendersphere.h"
 #include "rendersky.h"
+#include "renderplane.h"
 
-std::vector<RenderObject *> scene_objects;
+std::vector<std::shared_ptr<RenderObject>> scene_objects;
 
 // testing raytracer
 Color3d simple_ray_trace(const Ray3d &ray)
@@ -34,17 +36,21 @@ int main()
     std::string _windowName{"Rays!"};
 
     // test scene setup
-    RenderSphere s1(Coordinate3d(0, 0, -1), 0.2);
-    s1.set_color(Color3d(1, 0, 0));
-    scene_objects.push_back(&s1);
+    auto s1 = std::make_shared<RenderSphere>(Coordinate3d(0, 0, -1), 0.2);
+    s1->set_color(Color3d(1.0, 0.0, 0.0));
+    scene_objects.push_back(s1);
 
-    RenderSphere s2(Coordinate3d(-0.6, -0.7, -2), 0.2);
-    s2.set_color(Color3d(0, 1, 0));
-    scene_objects.push_back(&s2);
+    auto s2 = std::make_shared<RenderSphere>(Coordinate3d(-0.6, -0.7, -2), 0.2);
+    s2->set_color(Color3d(0.0, 1.0, 0.0));
+    scene_objects.push_back(s2);
 
-    RenderSky s3(Coordinate3d(INFINITY, INFINITY, INFINITY));
-    s3.set_color(Color3d(1, 1, 1));
-    scene_objects.push_back(&s3);
+    auto p1 = std::make_shared<RenderPlane>(Coordinate3d(0, 2, 0), Vector3d(0, 1.0, 0));
+    p1->set_color(Color3d(0.0, 1.0, 0.0));
+    scene_objects.push_back(p1);
+
+    auto rs = std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY));
+    rs->set_color(Color3d(1.0, 1.0, 1.0));
+    scene_objects.push_back(rs);
 
     // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
     // picture
@@ -87,7 +93,6 @@ int main()
 
             // set pixel
             img.at<cv::Vec3b>(cv::Point(x, y)) = color;
-            // if you copy value
         }
     }
 

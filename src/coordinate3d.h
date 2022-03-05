@@ -11,6 +11,8 @@ public:
     ~Coordinate3d();
     Coordinate3d(const Coordinate3d &source);               // copy constructor
     Coordinate3d& operator=(const Coordinate3d &source);    // copy assignment operator
+    Coordinate3d(const Coordinate3d &&source);              // move constructor
+    Coordinate3d& operator=(const Coordinate3d &&source);   // move assignment operator
 
     Coordinate3d(double dx, double dy, double dz);
 

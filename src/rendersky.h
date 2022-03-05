@@ -10,6 +10,9 @@ public:
     RenderSky();
     ~RenderSky();
     RenderSky(const RenderSky &source);               // copy constructor
+    RenderSky& operator=(const RenderSky &source);    // copy assignment operator
+    RenderSky(const RenderSky &&source);               // move constructor
+    RenderSky& operator=(const RenderSky &&source);    // move assignment operator
 
     RenderSky(Coordinate3d coordinate);
 

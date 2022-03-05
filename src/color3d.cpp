@@ -5,6 +5,42 @@
 Color3d::Color3d() : _r{0}, _g{0}, _b{0} {}
 Color3d::~Color3d() {}
 
+Color3d::Color3d(const Color3d &source)
+{
+    _r = source._r;
+    _g = source._g;
+    _b = source._b;
+}
+
+Color3d &Color3d::operator=(const Color3d &source)
+{
+    if (this == &source)
+        return *this;
+
+    _r = source._r;
+    _g = source._g;
+    _b = source._b;
+    return *this;
+}
+
+Color3d::Color3d(const Color3d &&source)
+{
+    _r = source._r;
+    _g = source._g;
+    _b = source._b;
+}
+
+Color3d &Color3d::operator=(const Color3d &&source)
+{
+    if (this == &source)
+        return *this;
+
+    _r = source._r;
+    _g = source._g;
+    _b = source._b;
+    return *this;
+}
+
 Color3d::Color3d(double dr, double dg, double db) : _r{dr}, _g{dg}, _b{db} {}
 
 // getters
@@ -13,7 +49,7 @@ double Color3d::g() const { return _g; }
 double Color3d::b() const { return _b; }
 
 // getters for integer range
-const double conversion_factor = 255.999999;
+const double conversion_factor = 255.0;
 int Color3d::r_integer() const { return _r * conversion_factor; }
 int Color3d::g_integer() const { return _g * conversion_factor; }
 int Color3d::b_integer() const { return _b * conversion_factor; }

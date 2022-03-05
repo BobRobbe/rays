@@ -9,6 +9,11 @@ public:
     // constructors
     Color3d();
     ~Color3d();
+    Color3d(const Color3d &source);               // copy constructor
+    Color3d& operator=(const Color3d &source);    // copy assignment operator
+    Color3d(const Color3d &&source);              // move constructor
+    Color3d& operator=(const Color3d &&source);    // move assignment operator
+
     Color3d(double dr, double dg, double db);
 
     // getters
