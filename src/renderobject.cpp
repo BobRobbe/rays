@@ -38,20 +38,15 @@ RenderObject &RenderObject::operator=(const RenderObject &&source)
     return *this;
 }
 
-RenderObject::RenderObject(Coordinate3d coordinate) : _origin{coordinate} {}
+RenderObject::RenderObject(Coordinate3d coordinate, Color3d color) : _origin{coordinate}, _color{color} {}
 
-double RenderObject::hits_render_object(const Ray3d &ray)
+double RenderObject::hits_render_object(Scene &scene, const Ray3d &ray)
 {
     return -1.0;
 }
 
-Color3d RenderObject::get_color(const Ray3d &ray, const double distance, int depth)
+Color3d RenderObject::get_color(Scene &scene, const Ray3d &ray, const double distance, int depth)
 {
     return _color;
 }
 
-void RenderObject::set_color(const Color3d color)
-{
-    _color = color;
-    //std::cout << "SetColor=" << _color << std::endl;
-}

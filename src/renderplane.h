@@ -14,11 +14,11 @@ public:
     RenderPlane(const RenderPlane &&source);               // move constructor
     RenderPlane& operator=(const RenderPlane &&source);    // move assignment operator
 
-    RenderPlane(Coordinate3d coordinate, Vector3d normal);
+    RenderPlane(Coordinate3d coordinate, Color3d color, Vector3d normal);
 
-    double hits_render_object(const Ray3d &ray) override;
+    double hits_render_object(Scene &scene, const Ray3d &ray) override;
 
-    Color3d get_color(const Ray3d &ray, const double distance, int depth) override;
+    Color3d get_color(Scene &scene, const Ray3d &ray, const double distance, int depth) override;
 
 private:
     Vector3d _normal;

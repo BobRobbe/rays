@@ -4,6 +4,9 @@
 #include "coordinate3d.h"
 #include "ray3d.h"
 #include "color3d.h"
+#include "scene.h"
+
+class Scene;
 
 class RenderObject
 {
@@ -16,12 +19,11 @@ public:
     RenderObject(const RenderObject &&source);              // move constructor
     RenderObject& operator=(const RenderObject &&source);   // move assignment operator
 
-    RenderObject(Coordinate3d coordinate);
+    RenderObject(Coordinate3d coordinate, Color3d color);
 
-    virtual double hits_render_object( const Ray3d &ray);
+    virtual double hits_render_object( Scene &scene, const Ray3d &ray);
 
-    virtual Color3d get_color(const Ray3d &ray, const double distance, int depth);
-    void set_color(const Color3d color);
+    virtual Color3d get_color(Scene &scene, const Ray3d &ray, const double distance, int depth);
 
 protected:
     Coordinate3d _origin;

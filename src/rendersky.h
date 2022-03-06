@@ -14,11 +14,11 @@ public:
     RenderSky(const RenderSky &&source);               // move constructor
     RenderSky& operator=(const RenderSky &&source);    // move assignment operator
 
-    RenderSky(Coordinate3d coordinate);
+    RenderSky(Coordinate3d coordinate, Color3d color);
 
-    double hits_render_object(const Ray3d &ray) override;
+    double hits_render_object(Scene &scene, const Ray3d &ray) override;
 
-    Color3d get_color(const Ray3d &ray, const double distance, int depth);
+    Color3d get_color(Scene &scene, const Ray3d &ray, const double distance, int depth);
 };
 
 #endif

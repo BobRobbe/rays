@@ -13,21 +13,7 @@
 #include "rendersky.h"
 #include "renderplane.h"
 
-std::vector<std::shared_ptr<RenderObject>> scene_objects;
-
-// testing raytracer
-Color3d simple_ray_trace(const Ray3d &ray, int depth)
-{
-    for (auto it = scene_objects.begin(); it < scene_objects.end(); ++it)
-    {
-        double distance = (*it)->hits_render_object(ray);
-        if ( distance > 0.0 )
-        {
-            return (*it)->get_color(ray, distance, depth);
-        }
-    }
-    return Color3d(0, 0, 0);
-}
+Scene scene{};
 
 /* Main function */
 int main()
@@ -35,21 +21,10 @@ int main()
     std::string _windowName{"Rays!"};
 
     // test scene setup
-    auto s1 = std::make_shared<RenderSphere>(Coordinate3d(0, 0, -1), 0.2);
-    s1->set_color(Color3d(1.0, 0.0, 0.0));
-    scene_objects.push_back(s1);
-
-    auto s2 = std::make_shared<RenderSphere>(Coordinate3d(-0.6, -0.7, -2), 0.2);
-    s2->set_color(Color3d(0.5, 0.5, 0.0));
-    scene_objects.push_back(s2);
-
-    auto p1 = std::make_shared<RenderPlane>(Coordinate3d(0, 2, 0), Vector3d(0, 1.0, 0));
-    p1->set_color(Color3d(0.0, 0.2, 0.6));
-    scene_objects.push_back(p1);
-
-    auto rs = std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY));
-    rs->set_color(Color3d(1.0, 1.0, 1.0));
-    scene_objects.push_back(rs);
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0, 0, -1), Color3d(1.0, 0.0, 0.0), 0.2));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-0.6, -0.7, -2), Color3d(0.5, 0.5, 0.0), 0.2));
+    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 2, 0), Color3d(0.3, 0.3, 0.3), Vector3d(0, 1.0, 0)));
+    scene.add_object(std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY), Color3d(1.0, 1.0, 1.0)));
 
     // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
     // picture
@@ -83,7 +58,7 @@ int main()
             Ray3d ray(camera_pos, viewport_lower_left + unit_horizontal * viewport_u + unit_vertical * viewport_v - camera_pos);
 
             // testing raytracing
-            Color3d pixel_color = simple_ray_trace(ray, 0);
+            Color3d pixel_color = scene.simple_ray_trace(ray, 0);
 
             // change color
             color[0] = pixel_color.b_integer();
@@ -98,7 +73,7 @@ int main()
     cv::namedWindow(_windowName);
     cv::imshow(_windowName, img);
 
-    cv::imwrite( "../image.png", img);
+    cv::imwrite("../image.png", img);
 
     cv::waitKey(0);
 

@@ -46,16 +46,16 @@ RenderPlane& RenderPlane::operator=(const RenderPlane &&source) {
     return *this;
 }
 
-RenderPlane::RenderPlane(Coordinate3d coordinate, Vector3d normal) : RenderObject{coordinate}, _normal{normal} {}
+RenderPlane::RenderPlane(Coordinate3d coordinate, Color3d color, Vector3d normal) : RenderObject{coordinate, color}, _normal{normal} {}
 
-double RenderPlane::hits_render_object(const Ray3d &ray)
+double RenderPlane::hits_render_object(Scene &scene, const Ray3d &ray)
 { // override
     double distance = (_origin - ray.origin()).dot(_normal) / ray.direction().dot(_normal);
 
     return distance;
 }
 
-Color3d RenderPlane::get_color(const Ray3d &ray, const double distance, int depth)
+Color3d RenderPlane::get_color(Scene &scene, const Ray3d &ray, const double distance, int depth)
 {
     //std::cout << "PlaneColor=" << _color << std::endl;
     // override

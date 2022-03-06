@@ -39,14 +39,14 @@ RenderSky &RenderSky::operator=(const RenderSky &&source)
     return *this;
 }
 
-RenderSky::RenderSky(Coordinate3d coordinate) : RenderObject{coordinate} {}
+RenderSky::RenderSky(Coordinate3d coordinate, Color3d color) : RenderObject{coordinate, color} {}
 
-double RenderSky::hits_render_object(const Ray3d &ray)
+double RenderSky::hits_render_object(Scene &scene, const Ray3d &ray)
 { // override
     return INFINITY;
 }
 
-Color3d RenderSky::get_color(const Ray3d &ray, const double distance, int depth)
+Color3d RenderSky::get_color(Scene &scene, const Ray3d &ray, const double distance, int depth)
 { // override
     // no object has been hit, paint background sky gradient
     // get the ray vector normalized to length 1
