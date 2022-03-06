@@ -55,7 +55,7 @@ double RenderPlane::hits_render_object(const Ray3d &ray)
     return distance;
 }
 
-Color3d RenderPlane::get_color(const Ray3d &ray, const double distance)
+Color3d RenderPlane::get_color(const Ray3d &ray, const double distance, int depth)
 {
     //std::cout << "PlaneColor=" << _color << std::endl;
     // override

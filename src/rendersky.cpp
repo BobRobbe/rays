@@ -46,7 +46,7 @@ double RenderSky::hits_render_object(const Ray3d &ray)
     return INFINITY;
 }
 
-Color3d RenderSky::get_color(const Ray3d &ray, const double distance)
+Color3d RenderSky::get_color(const Ray3d &ray, const double distance, int depth)
 { // override
     // no object has been hit, paint background sky gradient
     // get the ray vector normalized to length 1

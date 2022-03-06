@@ -16,14 +16,14 @@
 std::vector<std::shared_ptr<RenderObject>> scene_objects;
 
 // testing raytracer
-Color3d simple_ray_trace(const Ray3d &ray)
+Color3d simple_ray_trace(const Ray3d &ray, int depth)
 {
     for (auto it = scene_objects.begin(); it < scene_objects.end(); ++it)
     {
         double distance = (*it)->hits_render_object(ray);
         if ( distance > 0.0 )
         {
-            return (*it)->get_color(ray, distance);
+            return (*it)->get_color(ray, distance, depth);
         }
     }
     return Color3d(0, 0, 0);
@@ -32,7 +32,6 @@ Color3d simple_ray_trace(const Ray3d &ray)
 /* Main function */
 int main()
 {
-    std::cout << "Rays!" << std::endl;
     std::string _windowName{"Rays!"};
 
     // test scene setup
@@ -41,11 +40,11 @@ int main()
     scene_objects.push_back(s1);
 
     auto s2 = std::make_shared<RenderSphere>(Coordinate3d(-0.6, -0.7, -2), 0.2);
-    s2->set_color(Color3d(0.0, 1.0, 0.0));
+    s2->set_color(Color3d(0.5, 0.5, 0.0));
     scene_objects.push_back(s2);
 
     auto p1 = std::make_shared<RenderPlane>(Coordinate3d(0, 2, 0), Vector3d(0, 1.0, 0));
-    p1->set_color(Color3d(0.0, 1.0, 0.0));
+    p1->set_color(Color3d(0.0, 0.2, 0.6));
     scene_objects.push_back(p1);
 
     auto rs = std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY));
@@ -54,8 +53,8 @@ int main()
 
     // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
     // picture
-    const int image_width = 400;
-    const int image_height = 400;
+    const int image_width = 600;
+    const int image_height = 600;
 
     // camera
     // https://gabrielgambetta.com/computer-graphics-from-scratch/02-basic-raytracing.html#canvas-to-viewport
@@ -84,7 +83,7 @@ int main()
             Ray3d ray(camera_pos, viewport_lower_left + unit_horizontal * viewport_u + unit_vertical * viewport_v - camera_pos);
 
             // testing raytracing
-            Color3d pixel_color = simple_ray_trace(ray);
+            Color3d pixel_color = simple_ray_trace(ray, 0);
 
             // change color
             color[0] = pixel_color.b_integer();
@@ -98,6 +97,8 @@ int main()
 
     cv::namedWindow(_windowName);
     cv::imshow(_windowName, img);
+
+    cv::imwrite( "../image.png", img);
 
     cv::waitKey(0);
 

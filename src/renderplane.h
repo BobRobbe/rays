@@ -18,7 +18,7 @@ public:
 
     double hits_render_object(const Ray3d &ray) override;
 
-    Color3d get_color(const Ray3d &ray, const double distance) override;
+    Color3d get_color(const Ray3d &ray, const double distance, int depth) override;
 
 private:
     Vector3d _normal;

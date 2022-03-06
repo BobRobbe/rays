@@ -45,7 +45,7 @@ double RenderObject::hits_render_object(const Ray3d &ray)
     return -1.0;
 }
 
-Color3d RenderObject::get_color(const Ray3d &ray, const double distance)
+Color3d RenderObject::get_color(const Ray3d &ray, const double distance, int depth)
 {
     return _color;
 }
@@ -53,5 +53,5 @@ Color3d RenderObject::get_color(const Ray3d &ray, const double distance)
 void RenderObject::set_color(const Color3d color)
 {
     _color = color;
-    std::cout << "SetColor=" << _color << std::endl;
+    //std::cout << "SetColor=" << _color << std::endl;
 }

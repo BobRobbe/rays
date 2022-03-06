@@ -20,7 +20,7 @@ public:
 
     virtual double hits_render_object( const Ray3d &ray);
 
-    virtual Color3d get_color(const Ray3d &ray, const double distance);
+    virtual Color3d get_color(const Ray3d &ray, const double distance, int depth);
     void set_color(const Color3d color);
 
 protected:

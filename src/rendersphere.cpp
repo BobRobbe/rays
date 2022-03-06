@@ -69,7 +69,7 @@ double RenderSphere::hits_render_object(const Ray3d &ray)
     }
 }
 
-Color3d RenderSphere::get_color(const Ray3d &ray, const double distance)
+Color3d RenderSphere::get_color(const Ray3d &ray, const double distance, int depth)
 { // override
     /*if( distance > 0.0 ) {
         Vector3d normal = ray.point_at(distance) - Vector3d(0,0,-1);
