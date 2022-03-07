@@ -73,9 +73,10 @@ Color3d RenderSphere::get_color(Scene &scene, const Ray3d &ray, const double dis
 { // override
     if (distance > 0.0)
     {
-        Vector3d normal = ray.point_at(distance) - Vector3d(0, 0, -1);
+        //Vector3d normal = ray.point_at(distance) - Vector3d(0, 0, -1);
+        Vector3d normal = (ray.point_at(distance) - _origin).vector_unit();
 
-        if (depth < 3)
+        if (depth < 10)
         {
             Vector3d reflection = ray.direction() - (normal * 2 * ray.direction().dot(normal));
 

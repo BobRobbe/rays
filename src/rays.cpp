@@ -21,9 +21,10 @@ int main()
     std::string _windowName{"Rays!"};
 
     // test scene setup
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0, 0, -1), Color3d(1.0, 0.0, 0.0), 0.2));
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-0.6, -0.7, -2), Color3d(0.5, 0.5, 0.0), 0.2));
-    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 2, 0), Color3d(0.3, 0.3, 0.3), Vector3d(0, 1.0, 0)));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0, -0.2, -1), Color3d(1.0, 0.0, 0.0), 0.2));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-0.3, -0.3, -1), Color3d(0.5, 0.5, 0.0), 0.1));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1), Color3d(0.5, 0.5, 0.0), 0.5));
+    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 5, 0), Color3d(0.3, 0.3, 0.3), Vector3d(0, 1.0, 0)));
     scene.add_object(std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY), Color3d(1.0, 1.0, 1.0)));
 
     // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
