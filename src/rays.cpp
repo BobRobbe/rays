@@ -4,59 +4,19 @@
 #include <memory>
 #include <chrono>
 
+// include opencv
 #include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
+// include Rays headers
 #include "ray3d.h"
 #include "color3d.h"
 #include "rendersphere.h"
 #include "rendersky.h"
 #include "renderplane.h"
 
+// example Scene to be filled in main()
 Scene scene{};
-
-void compute_part(Scene scene, Coordinate3d camera_pos, int image_width, int image_height, int start_y, int end_y, cv::Mat3b img)
-{
-    double viewport_width = 1.0;
-    double viewport_height = 1.0;
-    double viewport_d = 1.0;
-
-    Vector3d unit_horizontal{viewport_width, 0, 0};
-    Vector3d unit_vertical{0, viewport_height, 0};
-    Vector3d unit_distance{0, 0, viewport_d};
-    Vector3d viewport_lower_left{camera_pos - unit_horizontal / 2 - unit_vertical / 2 - unit_distance};
-
-    double viewport_u, viewport_v;
-    cv::Vec3b color;
-    Color3d pixel_color;
-    int x, y;
-
-    for (y = end_y; y >= start_y; --y)
-    {
-        for (x = 0; x < img.cols; ++x)
-        {
-            // get pixel
-            color = img.at<cv::Vec3b>(y, x);
-
-            viewport_u = static_cast<double>(x) / (image_width - 1);
-            viewport_v = static_cast<double>(y) / (image_height - 1);
-            Ray3d ray(camera_pos, viewport_lower_left + unit_horizontal * viewport_u + unit_vertical * viewport_v - camera_pos);
-
-            // compute color of hit object
-            // might bounce due to reflection, initial bounce counter = 0
-            pixel_color = scene.simple_ray_trace(ray, 0);
-
-            // change color
-            color[0] = pixel_color.b_integer();
-            color[1] = pixel_color.g_integer();
-            color[2] = pixel_color.r_integer();
-
-            // set pixel
-            img.at<cv::Vec3b>(cv::Point(x, y)) = color;
-        }
-    }
-}
 
 /* Main function */
 int main()
@@ -97,6 +57,7 @@ int main()
     // opencv image for final display/save
     cv::Mat3b img(image_height, image_width, cv::Vec3b(0, 0, 0));
 
+    // grab timestamp to calculate the render time
     auto start = std::chrono::high_resolution_clock::now();
 
     const int no_threads = 4;
@@ -106,7 +67,7 @@ int main()
     for (size_t i = 0; i < no_threads; ++i)
     {
         // create new thread
-        threads.emplace_back(std::thread(compute_part, scene, camera_pos, image_width, image_height,
+        threads.emplace_back(std::thread(&Scene::compute_part, scene, camera_pos, image_width, image_height,
                                          slice * i, slice * i + slice - 1, img));
     }
 
@@ -114,15 +75,17 @@ int main()
     for (auto &t : threads)
         t.join();
 
+    // grab timestamp to calculate the render time
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = finish - start;
     std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
+    // display image and save to file
     cv::namedWindow(_windowName);
     cv::imshow(_windowName, img);
-
     cv::imwrite("../image.png", img);
 
+    // wait for key before quiting
     cv::waitKey(0);
 
     return 0;
