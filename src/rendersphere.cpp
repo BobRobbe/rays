@@ -73,22 +73,23 @@ Color3d RenderSphere::get_color(Scene &scene, const Ray3d &ray, const double dis
 { // override
     if (distance > 0.0)
     {
-        //Vector3d normal = ray.point_at(distance) - Vector3d(0, 0, -1);
         Vector3d normal = (ray.point_at(distance) - _origin).vector_unit();
 
-        if (depth < 10)
+        if (depth < 5)
         {
             Vector3d reflection = ray.direction() - (normal * 2 * ray.direction().dot(normal));
 
             Ray3d reflectedRay(ray.point_at(distance), reflection.vector_unit());
 
-            return( scene.simple_ray_trace(reflectedRay, ++depth));
+            Color3d reflectedColor = scene.simple_ray_trace(reflectedRay, ++depth);
 
-            //return Color3d(normal.x() + 1, normal.y() + 1, normal.z() + 1) * 0.5;
+            return (_color * reflectedColor);
+
+            // return Color3d(normal.x() + 1, normal.y() + 1, normal.z() + 1) * 0.5;
         }
         else
         {
-            return _color;
+            return Color3d(0, 0, 0);
         }
     }
     else

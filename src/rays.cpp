@@ -2,6 +2,7 @@
 #include <thread>
 #include <vector>
 #include <memory>
+#include <chrono>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
@@ -15,22 +16,70 @@
 
 Scene scene{};
 
+void compute_part(Scene scene, Coordinate3d camera_pos, int image_width, int image_height, int start_y, int end_y, cv::Mat3b img)
+{
+    double viewport_width = 1.0;
+    double viewport_height = 1.0;
+    double viewport_d = 1.0;
+
+    Vector3d unit_horizontal{viewport_width, 0, 0};
+    Vector3d unit_vertical{0, viewport_height, 0};
+    Vector3d unit_distance{0, 0, viewport_d};
+    Vector3d viewport_lower_left{camera_pos - unit_horizontal / 2 - unit_vertical / 2 - unit_distance};
+
+    double viewport_u, viewport_v;
+    cv::Vec3b color;
+    Color3d pixel_color;
+    int x, y;
+
+    for (y = end_y; y >= start_y; --y)
+    {
+        for (x = 0; x < img.cols; ++x)
+        {
+            // get pixel
+            color = img.at<cv::Vec3b>(y, x);
+
+            viewport_u = static_cast<double>(x) / (image_width - 1);
+            viewport_v = static_cast<double>(y) / (image_height - 1);
+            Ray3d ray(camera_pos, viewport_lower_left + unit_horizontal * viewport_u + unit_vertical * viewport_v - camera_pos);
+
+            // compute color of hit object
+            // might bounce due to reflection, initial bounce counter = 0
+            pixel_color = scene.simple_ray_trace(ray, 0);
+
+            // change color
+            color[0] = pixel_color.b_integer();
+            color[1] = pixel_color.g_integer();
+            color[2] = pixel_color.r_integer();
+
+            // set pixel
+            img.at<cv::Vec3b>(cv::Point(x, y)) = color;
+        }
+    }
+}
+
 /* Main function */
 int main()
 {
     std::string _windowName{"Rays!"};
 
     // test scene setup
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0, -0.2, -1), Color3d(1.0, 0.0, 0.0), 0.2));
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-0.3, -0.3, -1), Color3d(0.5, 0.5, 0.0), 0.1));
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1), Color3d(0.5, 0.5, 0.0), 0.5));
-    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 5, 0), Color3d(0.3, 0.3, 0.3), Vector3d(0, 1.0, 0)));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(2, -2, -12), Color3d(0.8, 0.8, 0.8), 2));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-3, -3, -8), Color3d(0.8, 0.8, 0.4), 1));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1), Color3d(0.4, 0.8, 0.8), 0.7));
+
+    for (int i = -20; i < 20; ++i)
+    {
+        scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(i, 0.8, -5), Color3d(0.9, 0.0, 0.0), 0.3));
+    }
+
+    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 10, 0), Color3d(0.7, 0.7, 0.7), Vector3d(0, 1.0, 0)));
     scene.add_object(std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY), Color3d(1.0, 1.0, 1.0)));
 
     // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
     // picture
-    const int image_width = 600;
-    const int image_height = 600;
+    const int image_width = 800;
+    const int image_height = 800;
 
     // camera
     // https://gabrielgambetta.com/computer-graphics-from-scratch/02-basic-raytracing.html#canvas-to-viewport
@@ -45,31 +94,28 @@ int main()
     Vector3d unit_distance{0, 0, viewport_d};
     Vector3d viewport_lower_left{camera_pos - unit_horizontal / 2 - unit_vertical / 2 - unit_distance};
 
-    cv::Mat3b img(image_height, image_width, cv::Vec3b(100, 100, 100));
+    cv::Mat3b img(image_height, image_width, cv::Vec3b(0, 0, 0));
 
-    for (int y = image_height - 1; y >= 0; --y)
+    auto start = std::chrono::high_resolution_clock::now();
+
+    const int no_threads = 4;
+    int slice = image_height / no_threads;
+
+    std::vector<std::thread> threads;
+    for (size_t i = 0; i < no_threads; ++i)
     {
-        for (int x = 0; x < img.cols; ++x)
-        {
-            // get pixel
-            cv::Vec3b color = img.at<cv::Vec3b>(y, x);
-
-            double viewport_u = static_cast<double>(x) / (image_width - 1);
-            double viewport_v = static_cast<double>(y) / (image_height - 1);
-            Ray3d ray(camera_pos, viewport_lower_left + unit_horizontal * viewport_u + unit_vertical * viewport_v - camera_pos);
-
-            // testing raytracing
-            Color3d pixel_color = scene.simple_ray_trace(ray, 0);
-
-            // change color
-            color[0] = pixel_color.b_integer();
-            color[1] = pixel_color.g_integer();
-            color[2] = pixel_color.r_integer();
-
-            // set pixel
-            img.at<cv::Vec3b>(cv::Point(x, y)) = color;
-        }
+        // create new thread
+        threads.emplace_back(std::thread(compute_part, scene, camera_pos, image_width, image_height,
+                                         slice * i, slice * i + slice - 1, img));
     }
+
+    // call join on all thread objects using a range-based loop
+    for (auto &t : threads)
+        t.join();
+
+    auto finish = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = finish - start;
+    std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 
     cv::namedWindow(_windowName);
     cv::imshow(_windowName, img);

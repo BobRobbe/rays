@@ -16,7 +16,8 @@ RenderPlane::RenderPlane(const RenderPlane &source)
     std::cout << "Plane copy constructor color=" << _color << std::endl;
 }
 
-RenderPlane& RenderPlane::operator=(const RenderPlane &source) {
+RenderPlane &RenderPlane::operator=(const RenderPlane &source)
+{
     if (this == &source)
         return *this;
 
@@ -35,7 +36,8 @@ RenderPlane::RenderPlane(const RenderPlane &&source)
     std::cout << "Plane move constructor color=" << _color << std::endl;
 }
 
-RenderPlane& RenderPlane::operator=(const RenderPlane &&source) {
+RenderPlane &RenderPlane::operator=(const RenderPlane &&source)
+{
     if (this == &source)
         return *this;
 
@@ -57,7 +59,21 @@ double RenderPlane::hits_render_object(Scene &scene, const Ray3d &ray)
 
 Color3d RenderPlane::get_color(Scene &scene, const Ray3d &ray, const double distance, int depth)
 {
-    //std::cout << "PlaneColor=" << _color << std::endl;
-    // override
-    return _color;
+    // where does the ray hit the plane
+    Coordinate3d hit_point = ray.point_at(distance);
+
+    const int offset = 10000;
+    const double factor = 0.2;
+
+    int index_x = (int)((hit_point.x() + offset) * factor) % 2;
+    int index_z = (int)((hit_point.z() + offset) * factor) % 2;
+
+    if ((index_x != 0 && index_z != 0) || (index_x == 0 && index_z == 0))
+    {
+        return _color;
+    }
+    else
+    {
+        return Color3d(0, 0, 0);
+    }
 }
