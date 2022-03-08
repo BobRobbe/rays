@@ -7,6 +7,9 @@ The principles and mathematics are derived from the book "Computer Graphics from
 
 ## Project Structure
 
+### Own basic classes
+These classes have been defined to provide basic functionality to calculate in 3D space and colors. The existing https://opencv.org approaches have not been used in order to be independent from the visualization framework.
+
 #### Coordinate3d (Point in 3D space)
 The class `Coordinate3d` encapsulates 3 values and is used to compute points in the 3D space (x, y, z).
 

@@ -66,7 +66,7 @@ int main()
     // test scene setup
     scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(2, -2, -12), Color3d(0.8, 0.8, 0.8), 2));
     scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-3, -3, -8), Color3d(0.8, 0.8, 0.4), 1));
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1), Color3d(0.4, 0.8, 0.8), 0.7));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1), Color3d(0.4, 0.8, 0.8), 3));
 
     for (int i = -20; i < 20; ++i)
     {
@@ -94,6 +94,7 @@ int main()
     Vector3d unit_distance{0, 0, viewport_d};
     Vector3d viewport_lower_left{camera_pos - unit_horizontal / 2 - unit_vertical / 2 - unit_distance};
 
+    // opencv image for final display/save
     cv::Mat3b img(image_height, image_width, cv::Vec3b(0, 0, 0));
 
     auto start = std::chrono::high_resolution_clock::now();
