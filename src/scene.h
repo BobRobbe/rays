@@ -5,6 +5,8 @@
 #include <memory>
 
 #include <opencv2/core.hpp>
+#include "ray3d.h"
+#include "color3d.h"
 #include "renderobject.h"
 
 class RenderObject;

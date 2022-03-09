@@ -9,7 +9,7 @@ RenderObject::~RenderObject() {}
 RenderObject::RenderObject(const RenderObject &source)
 {
     _origin = Coordinate3d(source._origin);
-    _color = Color3d(source._color);
+    _material = source._material;
 }
 
 RenderObject &RenderObject::operator=(const RenderObject &source)
@@ -18,14 +18,14 @@ RenderObject &RenderObject::operator=(const RenderObject &source)
         return *this;
 
     _origin = Coordinate3d(source._origin);
-    _color = Color3d(source._color);
+    _material = source._material;
     return *this;
 }
 
 RenderObject::RenderObject(const RenderObject &&source)
 {
     _origin = source._origin;
-    _color = source._color;
+    _material = source._material;
 }
 
 RenderObject &RenderObject::operator=(const RenderObject &&source)
@@ -34,11 +34,11 @@ RenderObject &RenderObject::operator=(const RenderObject &&source)
         return *this;
 
     _origin = source._origin;
-    _color = source._color;
+    _material = source._material;
     return *this;
 }
 
-RenderObject::RenderObject(Coordinate3d coordinate, Color3d color) : _origin{coordinate}, _color{color} {}
+RenderObject::RenderObject(Coordinate3d coordinate, Color3d material) : _origin{coordinate}, _material{material} {}
 
 double RenderObject::hits_render_object(Scene &scene, const Ray3d &ray)
 {
@@ -47,6 +47,5 @@ double RenderObject::hits_render_object(Scene &scene, const Ray3d &ray)
 
 Color3d RenderObject::get_color(Scene &scene, const Ray3d &ray, const double distance, int depth)
 {
-    return _color;
+    return Color3d(0, 0, 0);
 }
-

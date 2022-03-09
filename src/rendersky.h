@@ -14,7 +14,7 @@ public:
     RenderSky(const RenderSky &&source);               // move constructor
     RenderSky& operator=(const RenderSky &&source);    // move assignment operator
 
-    RenderSky(Coordinate3d coordinate, Color3d color);
+    RenderSky(Coordinate3d coordinate, Color3d material);
 
     double hits_render_object(Scene &scene, const Ray3d &ray) override;
 

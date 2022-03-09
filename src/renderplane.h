@@ -14,7 +14,7 @@ public:
     RenderPlane(const RenderPlane &&source);               // move constructor
     RenderPlane& operator=(const RenderPlane &&source);    // move assignment operator
 
-    RenderPlane(Coordinate3d coordinate, Color3d color, Vector3d normal);
+    RenderPlane(Coordinate3d coordinate, Vector3d normal, Color3d material);
 
     double hits_render_object(Scene &scene, const Ray3d &ray) override;
 

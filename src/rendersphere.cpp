@@ -12,7 +12,7 @@ RenderSphere::RenderSphere(const RenderSphere &source)
 {
     _origin = Coordinate3d(source._origin);
     _radius = source._radius;
-    _color = Color3d(source._color);
+    _material = source._material;
 }
 
 RenderSphere &RenderSphere::operator=(const RenderSphere &source)
@@ -22,7 +22,7 @@ RenderSphere &RenderSphere::operator=(const RenderSphere &source)
 
     _origin = Coordinate3d(source._origin);
     _radius = source._radius;
-    _color = Color3d(source._color);
+    _material = source._material;
     return *this;
 }
 
@@ -30,7 +30,7 @@ RenderSphere::RenderSphere(const RenderSphere &&source)
 {
     _origin = std::move(source._origin);
     _radius = source._radius;
-    _color = std::move(source._color);
+    _material = std::move(source._material);
 }
 
 RenderSphere &RenderSphere::operator=(const RenderSphere &&source)
@@ -40,11 +40,11 @@ RenderSphere &RenderSphere::operator=(const RenderSphere &&source)
 
     _origin = std::move(source._origin);
     _radius = source._radius;
-    _color = std::move(source._color);
+    _material = std::move(source._material);
     return *this;
 }
 
-RenderSphere::RenderSphere(Coordinate3d coordinate, Color3d color, double radius) : RenderObject{coordinate, color}, _radius{radius} {}
+RenderSphere::RenderSphere(Coordinate3d coordinate, double radius, Color3d material) : RenderObject{coordinate, material}, _radius{radius} {}
 
 double RenderSphere::hits_render_object(Scene &scene, const Ray3d &ray)
 { // override
@@ -75,27 +75,30 @@ Color3d RenderSphere::get_color(Scene &scene, const Ray3d &ray, const double dis
     {
         Vector3d normal = (ray.point_at(distance) - _origin).vector_unit();
 
-        if (depth < 5)
+        if (_material.get_material_kind() == mirror)
         {
-            Vector3d reflection = ray.direction() - (normal * 2 * ray.direction().dot(normal));
 
-            Ray3d reflectedRay(ray.point_at(distance), reflection.vector_unit());
-
-            Color3d reflectedColor = scene.simple_ray_trace(reflectedRay, ++depth);
-
-            return (_color * reflectedColor);
-
-            // return Color3d(normal.x() + 1, normal.y() + 1, normal.z() + 1) * 0.5;
+            if (depth < 5)
+            {
+                Vector3d reflection = ray.direction() - (normal * 2 * ray.direction().dot(normal));
+                Ray3d reflectedRay(ray.point_at(distance), reflection.vector_unit());
+                Color3d reflectedColor = scene.simple_ray_trace(reflectedRay, ++depth);
+                return (_material * reflectedColor);
+            }
+            else
+            {
+                return _material;
+            }
         }
-        else
+        else if (_material.get_material_kind() == phong)
         {
-            return Color3d(0, 0, 0);
+            return _material;
         }
     }
     else
     {
-        return _color;
+        return _material;
     }
     // std::cout << "SphereColor=" << _color << std::endl;
-    return _color;
+    return _material;
 }

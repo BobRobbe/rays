@@ -10,6 +10,7 @@ Color3d::Color3d(const Color3d &source)
     _r = source._r;
     _g = source._g;
     _b = source._b;
+    _material = source._material;
 }
 
 Color3d &Color3d::operator=(const Color3d &source)
@@ -20,6 +21,7 @@ Color3d &Color3d::operator=(const Color3d &source)
     _r = source._r;
     _g = source._g;
     _b = source._b;
+    _material = source._material;
     return *this;
 }
 
@@ -28,6 +30,7 @@ Color3d::Color3d(const Color3d &&source)
     _r = source._r;
     _g = source._g;
     _b = source._b;
+    _material = source._material;
 }
 
 Color3d &Color3d::operator=(const Color3d &&source)
@@ -38,15 +41,19 @@ Color3d &Color3d::operator=(const Color3d &&source)
     _r = source._r;
     _g = source._g;
     _b = source._b;
+    _material = source._material;
     return *this;
 }
 
 Color3d::Color3d(double dr, double dg, double db) : _r{dr}, _g{dg}, _b{db} {}
 
+Color3d::Color3d(double dr, double dg, double db, MKind material) : _r{dr}, _g{dg}, _b{db}, _material{material} {}
+
 // getters
 double Color3d::r() const { return _r; }
 double Color3d::g() const { return _g; }
 double Color3d::b() const { return _b; }
+MKind Color3d::get_material_kind() { return _material; }
 
 // getters for integer range
 const double conversion_factor = 255.0;

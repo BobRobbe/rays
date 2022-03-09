@@ -24,17 +24,29 @@ int main()
     std::string _windowName{"Rays!"};
 
     // test scene setup
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(2, -2, -12), Color3d(0.8, 0.8, 0.8), 2));
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-3, -3, -8), Color3d(0.8, 0.8, 0.4), 1));
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1), Color3d(0.4, 0.8, 0.8), 3));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(2, -2, -12),
+                                                    2.0,
+                                                    Color3d(0.8, 0.8, 0.8, MKind::mirror)));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-3, -3, -8),
+                                                    1.0,
+                                                    Color3d(0.8, 0.8, 0.4, MKind::phong)));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1),
+                                                    3.0,
+                                                    Color3d(0.4, 0.8, 0.8, MKind::mirror)));
 
     for (int i = -20; i < 20; ++i)
     {
-        scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(i, 0.8, -5), Color3d(0.9, 0.0, 0.0), 0.3));
+        scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(i, 0.8, -5),
+                                                        0.3,
+                                                        Color3d(0.9, 0.0, 0.0, MKind::mirror)));
     }
 
-    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 10, 0), Color3d(0.7, 0.7, 0.7), Vector3d(0, 1.0, 0)));
-    scene.add_object(std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY), Color3d(1.0, 1.0, 1.0)));
+    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 10, 0),
+                                                   Vector3d(0, 1.0, 0),
+                                                   Color3d(0.7, 0.7, 0.7, MKind::checkered)));
+
+    scene.add_object(std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY),
+                                                 Color3d(1.0, 1.0, 1.0, MKind::sky)));
 
     // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
     // picture

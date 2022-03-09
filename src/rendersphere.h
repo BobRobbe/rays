@@ -14,7 +14,7 @@ public:
     RenderSphere(const RenderSphere &&source);               // move constructor
     RenderSphere& operator=(const RenderSphere &&source);    // move assignment operator
 
-    RenderSphere(Coordinate3d coordinate, Color3d color, double radius);
+    RenderSphere(Coordinate3d coordinate, double radius, Color3d material);
 
     double hits_render_object(Scene &scene, const Ray3d &ray) override;
 
