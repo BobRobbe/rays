@@ -24,6 +24,9 @@ public:
 
     virtual Color3d get_color(Scene &scene, const Ray3d &ray, const double distance, int depth);
 
+    Coordinate3d get_origin();
+    Color3d get_material();
+
 protected:
     Coordinate3d _origin;
     Color3d _material;

@@ -49,3 +49,11 @@ Color3d RenderObject::get_color(Scene &scene, const Ray3d &ray, const double dis
 {
     return Color3d(0, 0, 0);
 }
+
+Coordinate3d RenderObject::get_origin() {
+    return _origin;
+}
+
+Color3d RenderObject::get_material() {
+    return _material;
+}

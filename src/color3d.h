@@ -12,7 +12,8 @@ enum MKind
     mirror,
     glas,
     checkered,
-    sky
+    sky,
+    light
 };
 
 class Color3d
@@ -26,6 +27,7 @@ public:
     Color3d(const Color3d &&source);            // move constructor
     Color3d &operator=(const Color3d &&source); // move assignment operator
 
+    Color3d(double grey);
     Color3d(double dr, double dg, double db);
     Color3d(double dr, double dg, double db, MKind material);
 
@@ -44,6 +46,9 @@ public:
     void r(double dr);
     void g(double dg);
     void b(double db);
+
+    // normalize to make sure the values are between 0.0 and 1.0
+    void normalize();
 
     // overloaded operators
     Color3d &operator+=(const Color3d &other);

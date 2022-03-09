@@ -39,7 +39,7 @@ void Scene::compute_part(Coordinate3d camera_pos, int image_width, int image_hei
 
             // compute color of hit object
             // might bounce due to reflection, initial bounce counter = 0
-            pixel_color = this->simple_ray_trace(ray, 0);
+            pixel_color = this->ray_trace(ray, 0);
 
             // change color
             color[0] = pixel_color.b_integer();
@@ -52,7 +52,7 @@ void Scene::compute_part(Coordinate3d camera_pos, int image_width, int image_hei
     }
 }
 
-Color3d Scene::simple_ray_trace(const Ray3d &ray, int depth)
+Color3d Scene::ray_trace(const Ray3d &ray, int depth)
 {
     // store candidates for the object which is closest to the ray origin
     std::shared_ptr<RenderObject> closestObject = nullptr;
@@ -81,4 +81,46 @@ Color3d Scene::simple_ray_trace(const Ray3d &ray, int depth)
     {
         return Color3d(0, 0, 0);
     }
+}
+
+void Scene::collect_lights()
+{
+    for (auto it = _scene_objects.begin(); it < _scene_objects.end(); ++it)
+    {
+        if ((*it)->get_material().get_material_kind() == MKind::light)
+        {
+            _lights.push_back(*it);
+        }
+    }
+}
+
+int Scene::is_in_shadow(const Coordinate3d &point)
+{
+    if (_lights.empty())
+    {
+        collect_lights();
+    }
+
+    int shadow_count = 0;
+
+    // iterate through lights
+    for (auto lt = _lights.begin(); lt < _lights.end(); ++lt)
+    {
+        // create a ray between the point and each light
+        Ray3d ray(point, ((*lt)->get_origin() - point).vector_unit());
+        // iterate through all RenderObjects to find if there is an obstacle between point and light
+        for (auto it = _scene_objects.begin(); it < _scene_objects.end(); ++it)
+        {
+            // check if the ray is interrupted by an object, skip lights
+            if ( !( (*it)->get_material().get_material_kind() == light) )
+            {
+                double distance = (*it)->hits_render_object(*this, ray);
+                if (distance < INFINITY && distance > 0.01)
+                {
+                    shadow_count++;
+                }
+            }
+        }
+    }
+    return shadow_count;
 }

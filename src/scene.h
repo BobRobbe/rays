@@ -21,10 +21,16 @@ public:
 
     void compute_part(Coordinate3d camera_pos, int image_width, int image_height, int start_y, int end_y, cv::Mat3b img);
 
-    Color3d simple_ray_trace(const Ray3d &ray, int depth);
+    int is_in_shadow(const Coordinate3d &ray);
+
+    Color3d ray_trace(const Ray3d &ray, int depth);
+
+    int max_bounce;
 
 private:
+    void collect_lights();
     std::vector<std::shared_ptr<RenderObject>> _scene_objects;
+    std::vector<std::shared_ptr<RenderObject>> _lights;
 };
 
 #endif

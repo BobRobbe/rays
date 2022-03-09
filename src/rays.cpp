@@ -15,21 +15,127 @@
 #include "rendersky.h"
 #include "renderplane.h"
 
+// parse arguments
+// https://stackoverflow.com/questions/865668/parsing-command-line-arguments-in-c
+class InputParser
+{
+public:
+    InputParser(int &argc, char **argv)
+    {
+        for (int i = 1; i < argc; ++i)
+            this->tokens.push_back(std::string(argv[i]));
+    }
+    /// @author iain
+    const std::string &getCmdOption(const std::string &option) const
+    {
+        std::vector<std::string>::const_iterator itr;
+        itr = std::find(this->tokens.begin(), this->tokens.end(), option);
+        if (itr != this->tokens.end() && ++itr != this->tokens.end())
+        {
+            return *itr;
+        }
+        static const std::string empty_string("");
+        return empty_string;
+    }
+    /// @author iain
+    bool cmdOptionExists(const std::string &option) const
+    {
+        return std::find(this->tokens.begin(), this->tokens.end(), option) != this->tokens.end();
+    }
+
+private:
+    std::vector<std::string> tokens;
+};
+
 // example Scene to be filled in main()
 Scene scene{};
 
+void print_usage()
+{
+    std::cout << "usage: rays [options]" << std::endl;
+    std::cout << "  -h    this help" << std::endl;
+    std::cout << "  -f    output file name (../image.png default)" << std::endl;
+    std::cout << "  -b    number of mirror bounces to be considered (default 5)" << std::endl;
+    std::cout << "  -t    number of threads to render in parallel (default 4)" << std::endl;
+}
+
 /* Main function */
-int main()
+int main(int argc, char **argv)
 {
     std::string _windowName{"Rays!"};
 
+    // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
+    // picture
+    int image_width = 800;
+    int image_height = image_width;
+    std::string file_name = "../image.png";
+    int number_threads = 4;
+    int max_bounce = 5;
+
+    // parse input arguments
+    InputParser input(argc, argv);
+
+    // help
+    if (input.cmdOptionExists("-h"))
+    {
+        print_usage();
+        return 0;
+    }
+
+    // file name
+    const std::string &filename = input.getCmdOption("-f");
+    if (!filename.empty())
+    {
+        file_name = filename;
+    }
+
+    // number of threads
+    const std::string &threads_string = input.getCmdOption("-t");
+    if (!threads_string.empty())
+    {
+        try
+        {
+            number_threads = std::stoi(threads_string);
+        }
+        catch (...)
+        {
+            print_usage();
+            return 0;
+        }
+    }
+
+    // mirror bounce limit
+    const std::string &bounce_string = input.getCmdOption("-b");
+    if (!bounce_string.empty())
+    {
+        try
+        {
+            max_bounce = std::stoi(bounce_string);
+        }
+        catch (...)
+        {
+            print_usage();
+            return 0;
+        }
+    }
+    scene.max_bounce = max_bounce;
+
     // test scene setup
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(2, -2, -12),
+    // lights
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(2000, -2000, 1000),
+                                                    600,
+                                                    Color3d(1, 1, 1, MKind::light)));
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-2000, -2000, 1000),
+                                                    600,
+                                                    Color3d(1, 1, 1, MKind::light)));
+
+    // spheres
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(2, -2.2, -12),
                                                     2.0,
                                                     Color3d(0.8, 0.8, 0.8, MKind::mirror)));
-    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-3, -3, -8),
+    scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(-2.5, -2.5, -8),
                                                     1.0,
-                                                    Color3d(0.8, 0.8, 0.4, MKind::phong)));
+                                                    Color3d(0.8, 0.8, 0.4, MKind::mirror)));
     scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1),
                                                     3.0,
                                                     Color3d(0.4, 0.8, 0.8, MKind::mirror)));
@@ -41,29 +147,20 @@ int main()
                                                         Color3d(0.9, 0.0, 0.0, MKind::mirror)));
     }
 
-    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 10, 0),
+    // plane
+    scene.add_object(std::make_shared<RenderPlane>(Coordinate3d(0, 1.5, 0),
                                                    Vector3d(0, 1.0, 0),
-                                                   Color3d(0.7, 0.7, 0.7, MKind::checkered)));
-
+                                                   Color3d(0.8, 0.8, 0.8, MKind::checkered)));
+    // sky
     scene.add_object(std::make_shared<RenderSky>(Coordinate3d(INFINITY, INFINITY, INFINITY),
                                                  Color3d(1.0, 1.0, 1.0, MKind::sky)));
 
-    // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
-    // picture
-    const int image_width = 800;
-    const int image_height = 800;
-
     // camera
     // https://gabrielgambetta.com/computer-graphics-from-scratch/02-basic-raytracing.html#canvas-to-viewport
-
-    double viewport_width = 1.0;
-    double viewport_height = 1.0;
-    double viewport_d = 1.0;
-
     Coordinate3d camera_pos{0, 0, 0};
-    Vector3d unit_horizontal{viewport_width, 0, 0};
-    Vector3d unit_vertical{0, viewport_height, 0};
-    Vector3d unit_distance{0, 0, viewport_d};
+    Vector3d unit_horizontal = Vector3d(1.0, 0, 0);
+    Vector3d unit_vertical = Vector3d(0, 1.0, 0);
+    Vector3d unit_distance = Vector3d(0, 0, 1.0);
     Vector3d viewport_lower_left{camera_pos - unit_horizontal / 2 - unit_vertical / 2 - unit_distance};
 
     // opencv image for final display/save
@@ -72,11 +169,11 @@ int main()
     // grab timestamp to calculate the render time
     auto start = std::chrono::high_resolution_clock::now();
 
-    const int no_threads = 4;
-    int slice = image_height / no_threads;
+    // consider number of threads to partition the image into slices
+    int slice = image_height / number_threads;
 
     std::vector<std::thread> threads;
-    for (size_t i = 0; i < no_threads; ++i)
+    for (size_t i = 0; i < number_threads; ++i)
     {
         // create new thread
         threads.emplace_back(std::thread(&Scene::compute_part, scene, camera_pos, image_width, image_height,
@@ -90,12 +187,12 @@ int main()
     // grab timestamp to calculate the render time
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = finish - start;
-    std::cout << "Elapsed time: " << elapsed.count() << " s\n";
+    std::cout << "Elapsed time: " << elapsed.count() << "seconds using " << number_threads << " of thread(s).\n";
 
     // display image and save to file
     cv::namedWindow(_windowName);
     cv::imshow(_windowName, img);
-    cv::imwrite("../image.png", img);
+    cv::imwrite(file_name, img);
 
     // wait for key before quiting
     cv::waitKey(0);

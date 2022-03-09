@@ -58,29 +58,54 @@ Color3d RenderPlane::get_color(Scene &scene, const Ray3d &ray, const double dist
     // where does the ray hit the plane
     Coordinate3d hit_point = ray.point_at(distance);
 
+    // check for shadow
+    int is_in_shadow = scene.is_in_shadow(hit_point);
+    Color3d shadow_color = Color3d(0.3)*is_in_shadow;
+
     switch (_material.get_material_kind())
     {
     case phong:
     {
-        return _material;
+        if (is_in_shadow > 0)
+        {
+            return _material - shadow_color;
+        }
+        else
+        {
+            return _material;
+        }
     }
 
     case checkered:
     {
 
         const int offset = 10000;
-        const double factor = 0.2;
+        const double factor = 0.5;
 
         int index_x = (int)((hit_point.x() + offset) * factor) % 2;
         int index_z = (int)((hit_point.z() + offset) * factor) % 2;
 
         if ((index_x != 0 && index_z != 0) || (index_x == 0 && index_z == 0))
         {
-            return _material;
+            if (is_in_shadow > 0)
+            {
+                return _material - shadow_color;
+            }
+            else
+            {
+                return _material;
+            }
         }
         else
         {
-            return Color3d(0, 0, 0);
+            if (is_in_shadow > 0)
+            {
+                return Color3d(0.1, 0.1, 0.1) - shadow_color;
+            }
+            else
+            {
+                return Color3d(0.1, 0.1, 0.1);
+            }
         }
     }
 

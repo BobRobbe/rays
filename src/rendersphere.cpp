@@ -75,30 +75,40 @@ Color3d RenderSphere::get_color(Scene &scene, const Ray3d &ray, const double dis
     {
         Vector3d normal = (ray.point_at(distance) - _origin).vector_unit();
 
-        if (_material.get_material_kind() == mirror)
+        switch (_material.get_material_kind())
         {
 
-            if (depth < 5)
+            case mirror:
             {
-                Vector3d reflection = ray.direction() - (normal * 2 * ray.direction().dot(normal));
-                Ray3d reflectedRay(ray.point_at(distance), reflection.vector_unit());
-                Color3d reflectedColor = scene.simple_ray_trace(reflectedRay, ++depth);
-                return (_material * reflectedColor);
+                if (depth < scene.max_bounce)
+                {
+                    Vector3d reflection = ray.direction() - (normal * 2 * ray.direction().dot(normal));
+                    Ray3d reflectedRay(ray.point_at(distance), reflection.vector_unit());
+                    Color3d reflectedColor = scene.ray_trace(reflectedRay, ++depth);
+                    return (_material * reflectedColor);
+                }
+                else
+                {
+                    return _material;
+                }
             }
-            else
+            case phong:
+            {
+                Vector3d specular = ray.direction() - (normal * 2 * ray.direction().dot(normal));
+                Ray3d specularRay(ray.point_at(distance), specular.vector_unit());
+
+                return _material;
+            }
+
+            default:
             {
                 return _material;
             }
-        }
-        else if (_material.get_material_kind() == phong)
-        {
-            return _material;
         }
     }
     else
     {
         return _material;
     }
-    // std::cout << "SphereColor=" << _color << std::endl;
     return _material;
 }
