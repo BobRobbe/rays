@@ -12,7 +12,7 @@ RenderPlane::RenderPlane(const RenderPlane &source)
 {
     _origin = Coordinate3d(source._origin);
     _normal = Vector3d(source._normal);
-    _material = source._material;
+    _material = Color3d(source._material);
 }
 
 RenderPlane &RenderPlane::operator=(const RenderPlane &source)
@@ -22,15 +22,15 @@ RenderPlane &RenderPlane::operator=(const RenderPlane &source)
 
     _origin = Coordinate3d(source._origin);
     _normal = Vector3d(source._normal);
-    _material = source._material;
+    _material = Color3d(source._material);
     return *this;
 }
 
 RenderPlane::RenderPlane(const RenderPlane &&source)
 {
-    _origin = source._origin;
-    _normal = source._normal;
-    _material = source._material;
+    _origin = std::move(source._origin);
+    _normal = std::move(source._normal);
+    _material = std::move(source._material);
 }
 
 RenderPlane &RenderPlane::operator=(const RenderPlane &&source)
@@ -60,7 +60,7 @@ Color3d RenderPlane::get_color(Scene &scene, const Ray3d &ray, const double dist
 
     // check for shadow
     int is_in_shadow = scene.is_in_shadow(hit_point);
-    Color3d shadow_color = Color3d(0.3)*is_in_shadow;
+    Color3d shadow_color = Color3d(0.3) * is_in_shadow;
 
     switch (_material.get_material_kind())
     {

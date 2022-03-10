@@ -12,7 +12,7 @@ RenderSphere::RenderSphere(const RenderSphere &source)
 {
     _origin = Coordinate3d(source._origin);
     _radius = source._radius;
-    _material = source._material;
+    _material = Color3d(source._material);
 }
 
 RenderSphere &RenderSphere::operator=(const RenderSphere &source)
@@ -22,7 +22,7 @@ RenderSphere &RenderSphere::operator=(const RenderSphere &source)
 
     _origin = Coordinate3d(source._origin);
     _radius = source._radius;
-    _material = source._material;
+    _material = Color3d(source._material);
     return *this;
 }
 
@@ -78,32 +78,32 @@ Color3d RenderSphere::get_color(Scene &scene, const Ray3d &ray, const double dis
         switch (_material.get_material_kind())
         {
 
-            case mirror:
+        case mirror:
+        {
+            if (depth < scene.max_bounce)
             {
-                if (depth < scene.max_bounce)
-                {
-                    Vector3d reflection = ray.direction() - (normal * 2 * ray.direction().dot(normal));
-                    Ray3d reflectedRay(ray.point_at(distance), reflection.vector_unit());
-                    Color3d reflectedColor = scene.ray_trace(reflectedRay, ++depth);
-                    return (_material * reflectedColor);
-                }
-                else
-                {
-                    return _material;
-                }
+                Vector3d reflection = ray.direction() - (normal * 2 * ray.direction().dot(normal));
+                Ray3d reflectedRay(ray.point_at(distance), reflection.vector_unit());
+                Color3d reflectedColor = scene.ray_trace(reflectedRay, ++depth);
+                return (_material * reflectedColor);
             }
-            case phong:
-            {
-                Vector3d specular = ray.direction() - (normal * 2 * ray.direction().dot(normal));
-                Ray3d specularRay(ray.point_at(distance), specular.vector_unit());
-
-                return _material;
-            }
-
-            default:
+            else
             {
                 return _material;
             }
+        }
+        case phong:
+        {
+            Vector3d specular = ray.direction() - (normal * 2 * ray.direction().dot(normal));
+            Ray3d specularRay(ray.point_at(distance), specular.vector_unit());
+
+            return _material;
+        }
+
+        default:
+        {
+            return _material;
+        }
         }
     }
     else

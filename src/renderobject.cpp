@@ -9,7 +9,7 @@ RenderObject::~RenderObject() {}
 RenderObject::RenderObject(const RenderObject &source)
 {
     _origin = Coordinate3d(source._origin);
-    _material = source._material;
+    _material = Color3d(source._material);
 }
 
 RenderObject &RenderObject::operator=(const RenderObject &source)
@@ -18,14 +18,14 @@ RenderObject &RenderObject::operator=(const RenderObject &source)
         return *this;
 
     _origin = Coordinate3d(source._origin);
-    _material = source._material;
+    _material = Color3d(source._material);
     return *this;
 }
 
 RenderObject::RenderObject(const RenderObject &&source)
 {
-    _origin = source._origin;
-    _material = source._material;
+    _origin = std::move(source._origin);
+    _material = std::move(source._material);
 }
 
 RenderObject &RenderObject::operator=(const RenderObject &&source)
@@ -33,8 +33,8 @@ RenderObject &RenderObject::operator=(const RenderObject &&source)
     if (this == &source)
         return *this;
 
-    _origin = source._origin;
-    _material = source._material;
+    _origin = std::move(source._origin);
+    _material = std::move(source._material);
     return *this;
 }
 
@@ -50,10 +50,12 @@ Color3d RenderObject::get_color(Scene &scene, const Ray3d &ray, const double dis
     return Color3d(0, 0, 0);
 }
 
-Coordinate3d RenderObject::get_origin() {
+Coordinate3d RenderObject::get_origin()
+{
     return _origin;
 }
 
-Color3d RenderObject::get_material() {
+Color3d RenderObject::get_material()
+{
     return _material;
 }

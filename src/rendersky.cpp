@@ -10,7 +10,7 @@ RenderSky::~RenderSky() {}
 RenderSky::RenderSky(const RenderSky &source)
 {
     _origin = Coordinate3d(source._origin);
-    _material = source._material;
+    _material = Color3d(source._material);
 }
 
 RenderSky &RenderSky::operator=(const RenderSky &source)
@@ -19,14 +19,14 @@ RenderSky &RenderSky::operator=(const RenderSky &source)
         return *this;
 
     _origin = Coordinate3d(source._origin);
-    _material = source._material;
+    _material = Color3d(source._material);
     return *this;
 }
 
 RenderSky::RenderSky(const RenderSky &&source)
 {
-    _origin = source._origin;
-    _material = source._material;
+    _origin = std::move(source._origin);
+    _material = std::move(source._material);
 }
 
 RenderSky &RenderSky::operator=(const RenderSky &&source)
@@ -34,8 +34,8 @@ RenderSky &RenderSky::operator=(const RenderSky &&source)
     if (this == &source)
         return *this;
 
-    _origin = source._origin;
-    _material = source._material;
+    _origin = std::move(source._origin);
+    _material = std::move(source._material);
     return *this;
 }
 
@@ -54,5 +54,5 @@ Color3d RenderSky::get_color(Scene &scene, const Ray3d &ray, const double distan
     // check the height (y) amount to fetch the sky color
     double height = 0.3 * (direction.y() + 1.0);
     // calculate a color gradient for the sky
-    return (Color3d(1,1,1) * (1.0 - height) + Color3d(0.3, 0.6, 1.0) * height);
+    return (Color3d(1, 1, 1) * (1.0 - height) + Color3d(0.3, 0.6, 1.0) * height);
 }

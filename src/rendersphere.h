@@ -9,10 +9,10 @@ public:
     // constructors
     RenderSphere();
     ~RenderSphere();
-    RenderSphere(const RenderSphere &source);               // copy constructor
-    RenderSphere& operator=(const RenderSphere &source);    // copy assignment operator
-    RenderSphere(const RenderSphere &&source);               // move constructor
-    RenderSphere& operator=(const RenderSphere &&source);    // move assignment operator
+    RenderSphere(const RenderSphere &source);             // copy constructor
+    RenderSphere &operator=(const RenderSphere &source);  // copy assignment operator
+    RenderSphere(const RenderSphere &&source);            // move constructor
+    RenderSphere &operator=(const RenderSphere &&source); // move assignment operator
 
     RenderSphere(Coordinate3d coordinate, double radius, Color3d material);
 
