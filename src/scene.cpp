@@ -5,13 +5,18 @@
 Scene::Scene() {}
 Scene::~Scene() {}
 
+// add a RenderObject, used for objects and lights
 void Scene::add_object(std::shared_ptr<RenderObject> obj)
 {
     _scene_objects.push_back(obj);
 }
 
+// method to be started as a thread
+// computes the part of the image given by start_y and end_y
+// no mutex required on the image (img) as all lauched threads operate on a different part of the image
 void Scene::compute_part(Coordinate3d camera_pos, int image_width, int image_height, int start_y, int end_y, cv::Mat3b img)
 {
+    // https://gabrielgambetta.com/computer-graphics-from-scratch/02-basic-raytracing.html#canvas-to-viewport
     double viewport_width = 1.0;
     double viewport_height = 1.0;
     double viewport_d = 1.0;
@@ -26,6 +31,8 @@ void Scene::compute_part(Coordinate3d camera_pos, int image_width, int image_hei
     Color3d pixel_color;
     int x, y;
 
+    // https://gabrielgambetta.com/computer-graphics-from-scratch/02-basic-raytracing.html#tracing-rays
+    // iterate through the slice provided to this render thread
     for (y = end_y; y >= start_y; --y)
     {
         for (x = 0; x < img.cols; ++x)
@@ -33,6 +40,7 @@ void Scene::compute_part(Coordinate3d camera_pos, int image_width, int image_hei
             // get pixel
             color = img.at<cv::Vec3b>(y, x);
 
+            // calculate the ray to be shot into the scene the represent the current x/y coorinate on the viewport
             viewport_u = static_cast<double>(x) / (image_width - 1);
             viewport_v = static_cast<double>(y) / (image_height - 1);
             Ray3d ray(camera_pos, viewport_lower_left + unit_horizontal * viewport_u + unit_vertical * viewport_v - camera_pos);
@@ -52,6 +60,9 @@ void Scene::compute_part(Coordinate3d camera_pos, int image_width, int image_hei
     }
 }
 
+// computes the color of a specific ray cast into the scene
+// depth gives the number of mirror bounces already taken
+// if max_bounce is reached the color of the last hit object is returned
 Color3d Scene::ray_trace(const Ray3d &ray, int depth)
 {
     // store candidates for the object which is closest to the ray origin
@@ -83,6 +94,7 @@ Color3d Scene::ray_trace(const Ray3d &ray, int depth)
     }
 }
 
+// internal method to collect all lights from the list of objects
 void Scene::collect_lights()
 {
     for (auto it = _scene_objects.begin(); it < _scene_objects.end(); ++it)
@@ -94,6 +106,8 @@ void Scene::collect_lights()
     }
 }
 
+// computes whether the given pixel has a direct visual line to a light source
+// return value gives the number of visible light sources
 int Scene::is_in_shadow(const Coordinate3d &point)
 {
     if (_lights.empty())
@@ -112,7 +126,7 @@ int Scene::is_in_shadow(const Coordinate3d &point)
         for (auto it = _scene_objects.begin(); it < _scene_objects.end(); ++it)
         {
             // check if the ray is interrupted by an object, skip lights
-            if ( !( (*it)->get_material().get_material_kind() == light) )
+            if (!((*it)->get_material().get_material_kind() == light))
             {
                 double distance = (*it)->hits_render_object(*this, ray);
                 if (distance < INFINITY && distance > 0.01)

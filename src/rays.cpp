@@ -173,10 +173,6 @@ int main(int argc, char **argv)
     // camera
     // https://gabrielgambetta.com/computer-graphics-from-scratch/02-basic-raytracing.html#canvas-to-viewport
     Coordinate3d camera_pos{0, 0, 0};
-    Vector3d unit_horizontal = Vector3d(1.0, 0, 0);
-    Vector3d unit_vertical = Vector3d(0, 1.0, 0);
-    Vector3d unit_distance = Vector3d(0, 0, 1.0);
-    Vector3d viewport_lower_left{camera_pos - unit_horizontal / 2 - unit_vertical / 2 - unit_distance};
 
     // calculate the image height based on the given width
     // limitation: current implementation only supports square images
