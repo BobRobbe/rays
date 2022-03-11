@@ -3,16 +3,17 @@
 
 #include <iostream>
 
+// Coordinate3d is used to provide the possibility to define a 3D coordinate
 class Coordinate3d
 {
 public:
     // constructors
     Coordinate3d();
     ~Coordinate3d();
-    Coordinate3d(const Coordinate3d &source);               // copy constructor
-    Coordinate3d& operator=(const Coordinate3d &source);    // copy assignment operator
-    Coordinate3d(const Coordinate3d &&source);              // move constructor
-    Coordinate3d& operator=(const Coordinate3d &&source);   // move assignment operator
+    Coordinate3d(const Coordinate3d &source);             // copy constructor
+    Coordinate3d &operator=(const Coordinate3d &source);  // copy assignment operator
+    Coordinate3d(const Coordinate3d &&source);            // move constructor
+    Coordinate3d &operator=(const Coordinate3d &&source); // move assignment operator
 
     Coordinate3d(double dx, double dy, double dz);
 
@@ -49,7 +50,7 @@ protected:
 // https://stackoverflow.com/questions/476272/how-to-properly-overload-the-operator-for-an-ostream
 std::ostream &operator<<(std::ostream &my_out, const Coordinate3d &other);
 
-// type alias
+// type alias to define a vector (which is technically the same as a coordinate)
 using Vector3d = Coordinate3d;
 
 #endif

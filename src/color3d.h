@@ -16,6 +16,9 @@ enum MKind
     light
 };
 
+// Color3d is used to provide the possibility to define a RGB color value in the range of 0.0 to 1.0
+// material kind can be defined as well
+// calculations with colors and conversion to integer range 0 to 255 are provided
 class Color3d
 {
 public:
@@ -37,7 +40,7 @@ public:
     double b() const;
     MKind get_material_kind();
 
-    // getters for integer range
+    // getters for integer range 0-255
     int r_integer() const;
     int g_integer() const;
     int b_integer() const;

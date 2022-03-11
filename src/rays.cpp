@@ -57,6 +57,7 @@ void print_usage()
     std::cout << "  -f    output file name (../image.png default)" << std::endl;
     std::cout << "  -b    number of mirror bounces to be considered (default 5)" << std::endl;
     std::cout << "  -t    number of threads to render in parallel (default 4)" << std::endl;
+    std::cout << "  -s    size of the rendered image (default 800)" << std::endl;
 }
 
 /* Main function */
@@ -67,7 +68,6 @@ int main(int argc, char **argv)
     // https://en.wikipedia.org/wiki/Ray_tracing_(graphics)
     // picture
     int image_width = 800;
-    int image_height = image_width;
     std::string file_name = "../image.png";
     int number_threads = 4;
     int max_bounce = 5;
@@ -120,6 +120,21 @@ int main(int argc, char **argv)
     }
     scene.max_bounce = max_bounce;
 
+    // image size
+    const std::string &size_string = input.getCmdOption("-s");
+    if (!size_string.empty())
+    {
+        try
+        {
+            image_width = std::stoi(size_string);
+        }
+        catch (...)
+        {
+            print_usage();
+            return 0;
+        }
+    }
+
     // test scene setup
     // lights
     scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(2000, -2000, 1000),
@@ -139,7 +154,7 @@ int main(int argc, char **argv)
     scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(0.5, 0.8, 1),
                                                     3.0,
                                                     Color3d(0.4, 0.8, 0.8, MKind::mirror)));
-
+    // a line of spheres
     for (int i = -20; i < 20; ++i)
     {
         scene.add_object(std::make_shared<RenderSphere>(Coordinate3d(i, 0.8, -5),
@@ -163,6 +178,9 @@ int main(int argc, char **argv)
     Vector3d unit_distance = Vector3d(0, 0, 1.0);
     Vector3d viewport_lower_left{camera_pos - unit_horizontal / 2 - unit_vertical / 2 - unit_distance};
 
+    // calculate the image height based on the given width
+    // limitation: current implementation only supports square images
+    int image_height = image_width;
     // opencv image for final display/save
     cv::Mat3b img(image_height, image_width, cv::Vec3b(0, 0, 0));
 
@@ -172,6 +190,7 @@ int main(int argc, char **argv)
     // consider number of threads to partition the image into slices
     int slice = image_height / number_threads;
 
+    // create number_threads to calculate the slices
     std::vector<std::thread> threads;
     for (size_t i = 0; i < number_threads; ++i)
     {
